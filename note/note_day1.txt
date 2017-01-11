@@ -1,0 +1,131 @@
+Data Carpentry @ UW Madison
+January 10-11, 2017
+Location: 3rd Floor teaching lab, Wisconsin Institutes for Discovery (http://map.wisc.edu/s/viuw59ds )
+
+Useful links
+
+Workshop website: https://uw-madison-aci.github.io/2017-01-10-uwmadison/
+This etherpad: http://pad.software-carpentry.org/2017-01-10-uwmadison
+Data for whole workshop: http://kbroman.org/datacarp/
+Lesson material we'll be using: http://www.datacarpentry.org/lessons/#ecology-workshop
+
+Tweet us at #dcuwm
+
+Spreadsheets
+
+Data to download: 
+https://ndownloader.figshare.com/files/2252083
+
+Spreadsheets Notes(help us fill this in, if you've complete the exercise already):
+    Improvements on the orignal spreadsheet:
+create a sub-spread sheet for each table, and align each table on the upper left, so that reading them into R becomes easier 
+write "nan" in all the missing cells ("NA" is used)
+add "comments" column (move notes e.g. scale not calibrated into this column)
+Made units uniform (i.e. dates formatted the same, weights all presented uniformly)
+Separated sex into new column in 2014 data (removed from species)
+ Pulled out the "calibrated" text from the two records that have a reference to it -- so as not to produce unprocessable cells -- created two columns expressing "calibrated y/n" and "calibrated correctly y/n" given difference between 2013 and 2014 worksheets -- would then have to go interrogate people to understand what's going on
+Ditto interrogation on 2015 data that mysteriously invaded 2014 worksheet
+Also fixed typo in "calibrated" so I could sleep tonight 
+create a boolean column indicating uncalibrated values, because I don't know how to read color-coding into programming languages
+create a sub-spreadsheet for notes
+
+
+
+
+Open Refine
+
+Demo dataset: https://www.dropbox.com/s/kbb4k00eanm19lg/Portal_rodents_19772002_scinameUUIDs.csv?dl=0
+Do not download to your dropbox if you have an account. Please download to your computer and save in your raw data file.
+
+Extra dataset: https://data.cityofnewyork.us/Social-Services/sandyrelated/fs5z-tpv4
+Click the light blue "export" button and then download as .csv
+
+To open Open Refine: http://127.0.0.1:3333/
+
+Brian: OpenRefine web site has book info: http://openrefine.org/ . Here is UW-Library book link: https://search.library.wisc.edu/catalog/9910188730302121
+
+Hurricane Sandy-related NYC 311 calls (Open Refine Exercise)
+1. Check for trailing and leading spaces in a few columns.
+2. Investigate Agency column using facets. 
+a. Look at the data for 3-1-1. How do you think this might be interpreted in spreadsheets, data analysis tools?
+b. How would you modify the data to fix this issue?
+3. Investigate Complaint type column using clustering.  Can you merge any fields? Which ones?
+4. Limit the data to calls that have an incident address.
+5. How many calls are pending in the borough of Queens?
+6. What is the most common compliant among pending calls in the borough of Queens?
+7. What is the least common complaint among pending calls in the borough of Queens?
+8. What is the Unique key of the tattooing compliant?
+9. Split Created Dates into Month, Day, Year and time columns. Do the same with Closed Date if time permits.
+
+SQL
+
+Data at: http://kbroman.org/datacarp/
+Need three .csv files: surveys.csv, species.csv, and plots.csv
+
+Brian: Other SQL resources include 
+W3 SQL Tutorial and Glossary: http://www.w3schools.com/sql/
+Lynda.com SQL Essential Training Video: https://www.lynda.com/SQL-tutorials/SQL-Essential-Training/139988-2.html (3.5hr!)
+R/dplyr SQL Databases Vignette: https://cran.rstudio.com/web/packages/dplyr/vignettes/databases.html (SQL from within R using dplyr package)
+
+SELECT year FROM surveys
+SELECT year, month, day FROM surveys
+SELECT * FROM surveys
+SELECT DISTINCT species_id FROM surveys
+SELECT year,month,date, weight/1000.0 FROM surveys
+SELECT year,month,date, ROUND(weight/1000.0,2) FROM surveys
+SELECT * FROM surveys WHERE species_id = 'DM'
+SELECT * FROM surveys WHERE year >=2000
+SELECT * FROM surveys WHERE (year >= 2000) AND (species_id = 'DM')
+SELECT * FROM surveys WHERE (species_id = 'DM') OR (species_id = 'DS') OR (species_id = 'DO')
+SELECT * FROM surveys WHERE (species_id IN ('DM', 'DS','DO'))
+SELECT * FROM surveys WHERE (species_id IN ('DM', 'DS','DO')) AND (year >=2000)
+
+SELECT * FROM species
+SELECT * FROM species ORDER BY taxa ASC
+SELECT * FROM species ORDER BY taxa DESC
+SELECT * FROM species ORDER BY genus ASC, species ASC
+SELECT genus, species FROM species WHERE taxa = 'Bird' ORDER By species_in ASC
+
+SELECT COUNT(*) FROM surveys
+SELECT COUNT(*), SUM(weight) FROM surveys
+SELECT COUNT(*), ROUND(SUM(weight)/1000.0,2) FROM surveys
+SELECT COUNT(*), AVG(weight) FROM surveys
+
+
+SELECT species_id, COUNT(species_id) FROM surveys GROUP BY species_id HAVING occurences > 10
+SELECT species_id, COUNT(species_id) AS occurences FROM surveys GROUP BY species_id HAVING occurences > 10
+    note: could use anything for "occurences" -- good to use a name that means something
+
+SELECT species_id, COUNT(*) FROM surveys GROUP BY species_id ORDER BY COUNT(species_id)
+
+CREATE VIEW summer_2000 AS SELECT * FROM surveys WHERE year = 2000 AND (month > 4) AND (month < 10)
+
+SELECT * FROM summer_2000
+SELECT * FROM summer_2000 WHERE species_id IS NULL
+SELECT * FROM summer_2000 WHERE species_id IS NOT NULL
+SELECT * FROM summer_2000 WHERE species_id WHERE species_id = 'PE'
+
+SELECT SUM(weight), COUNT(*), SUM(weight)/COUNT(*) WHERE species_id WHERE species_id = 'PE'
+SELECT SUM(weight), COUNT(species_id), SUM(weight)/COUNT(species_id) WHERE species_id WHERE species_id = 'PE'
+
+SELECT * FROM surveys JOIN species ON surveys.species_id = species.species_id;
+
+SELECT surveys.year, surveys.month, surveys.day, species.genus, species.species FROM surveys JOIN species ON surveys.species_id = species.species_id;
+
+SELECT genus, species.species, AVG(weight), FROM surveys JOIN species ON species.species_id = survey.species_id WHERE taxa = 'Rodent' GROUP BY species.species_id
+
+SELECT surveys.weight, plots.plot_type FROM surveys JOIN species ON species.species_id = surveys.species_id JOIN plots on surveys.plot_id = plots.plot_id WHERE genus = 'Dipodomys';
+
+question (SQL)
+- is there a recommended SQL API to check the documentation of the keywords?
+See ttp://www.w3school3s.com/sql/ mentioned above. 
+Also, there are tools in R (notably packages dplyr -which we will learn tomorrow- and RSQLite) that wrap R code around SQL cals. See link above for dplyr.
+
+SELECT species_id, round(weight/1000,2)  FROM surveys 
+WHERE year = "1992"
+ORDER BY species_id DESC
+
+-SELECT sum(weight), avg(weight), min(weight), max(weight) FROM surveys 
+
+-SELECT sum(weight), avg(weight), min(weight), max(weight) FROM surveys WHERE weight >= "5" and weight <= "10"
+

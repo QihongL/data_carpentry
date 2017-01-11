@@ -1,0 +1,69 @@
+---
+title: "My report"
+author: "Qihong Lu"
+date: "2017-01-11"
+output: html_document
+---
+
+
+```{r chunk_options, echo = F}
+knitr::opts_chunk$set(echo=F, warning=F, message=F)
+```
+
+
+## section header 
+
+blablablabla
+
+### sub section header 
+
+blablablabla
+
+#### sub sub section header 
+
+blablablabla
+
+**bold**
+
+_italic_
+
+
+
+###Load libraries 
+
+don't print...
+
+- the code (echo = F)
+
+- the output (results = "hide")
+
+- the message (message = F)
+
+- the warning (warning = F)
+
+```{r load_libraries, message = F, echo = F, results = "hide", warning= F}
+rm(list=ls());
+library(dplyr);library(ggplot2);
+```
+
+###Load data 
+```{r load_data}
+dataURL = 'http://kbroman.org/datacarp/portal_data_reduced.csv'
+data = read.csv(dataURL)
+```
+These data have `r nrow(data)` rows and `r ncol(data)` columns 
+
+###This is a plot for bla bla bla 
+```{r plot}
+data_reduced = data %>% group_by(species) %>% 
+    summarize(wt_mean = mean(weight, na.rm = T), 
+              hfl_mean = mean(hindfoot_length, na.rm = T),
+              sample_size = n()) 
+data_reduced %>%  ggplot(aes(x = wt_mean, y = hfl_mean)) + 
+    geom_point(aes(color = sample_size, size = sample_size))
+```
+
+
+## Help
+If you don't remember, click "Help -> Cheatsheet -> ..." or "Help -> Markdown quick reference"
+

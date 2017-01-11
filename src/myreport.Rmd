@@ -1,0 +1,50 @@
+---
+title: "myreport"
+author: "Qihong Lu"
+date: "2017-01-11"
+output: html_document
+---
+
+```{r global_options, echo = F}
+knitr::opts_chunk$set(echo=F, warning=F, message=F)
+```
+
+
+
+```{r Load packages and data}
+rm(list=ls());
+library(dplyr);library(ggplot2);
+dataURL = 'http://kbroman.org/datacarp/portal_data_reduced.csv'
+data = read.csv(dataURL)
+```
+
+Create a boxplot of weight by sex, ommitting individual with missing sex 
+```{r boxplot}
+data %>% filter(!is.na(sex)) %>% 
+    ggplot(aes(x=sex,y=weight)) + geom_boxplot()
+
+```
+
+
+Create a hisogram of hindfoot lengths
+```{r hisogram}
+data %>% ggplot(aes(x = hindfoot_length)) + geom_histogram(bins = 100)
+```
+
+
+Plot hindfoot length vs weight for "DM", "DO" and "DS". 
+```{r scatter}
+data %>% filter(species_id %in% c("DM", "DO","DS")) %>% 
+    ggplot(aes(x=weight,y=hindfoot_length)) + 
+    geom_point(aes(color = sex)) +
+    facet_wrap(~species_id)
+```
+Plot the counts of DM over time 
+
+```{r counts}
+data %>% filter(species_id == "DM") %>% group_by(year,plot_type) %>% 
+    tally() %>% 
+    ggplot(aes(x = year, y = n)) + 
+    geom_line(aes(color = plot_type)) + 
+    geom_point(aes(color = plot_type))
+```

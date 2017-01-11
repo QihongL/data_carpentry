@@ -1,0 +1,47 @@
+Day 2: R
+
+In RStudio:
+ctrl-2 (cmd-2 on Mac) to focus on console pane
+ctrl-0 (cmd-0 on Mac) to see all four panes again
+ctrl-enter (cmd-enter) to paste code from script to the console
+
+RStudio shortcut for assignment operator (<-): alt-minus (or option-minus)
+
+Reading in the surveys data:
+    surveys <- read.csv("http://kbroman.org/datacarp/portal_data_joined.csv")
+
+Getting summary information
+    str(surveys)
+    head(surveys)
+    tail(surveys)
+    summary(surveys)
+
+    nrow(surveys)
+    ncol(surveys)
+    names(surveys)
+    colnames(surveys)
+    rownames(surveys)
+
+To download the surveys data to a file:
+    download.file("http://kbroman.org/datacarp/portal_data_joined.csv", "Data/portal_data_joined.csv")
+
+What is my current working directory?
+    getwd()
+
+Subsetting a data frame
+    surveys[2, 7]  # element in the 2nd row, 7th column
+    surveys[2, ]     # the entire 2nd row
+    surveys[, 7]     # the entire 7th column
+    surveys[, "sex"]   # the column named "sex"
+    surveys$sex        # another way to get the column named "sex"
+
+
+Sex column as a vector
+    sex <- surveys$sex
+    sex[1]   # the first element in this "vector"
+
+
+It should be mentioned that read.csv() does complicated operations when reading a CSV file and making a data frame for R.  read.csv() makes intelligent decisions about whether to make a column in a table a number or a factor and where to put NAs.  Before understanding how read.csv() puts NA values into the data frame, it's good to know that R will try to make a number column if it can.  If the number column is contaminated by a word that isn't a number, R will quickly give up and make that column a factor column.  The moral of the story is that it's important to clean up the csv before reading it in R and make sure the csv doesn't have any mistakes that will confuse R.  
+
+dplyr
+pipe operator: %>% (shortcut in RStudio: ctrl-shift-M (cmd-shift-M on mac)
